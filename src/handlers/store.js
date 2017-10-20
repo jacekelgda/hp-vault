@@ -1,5 +1,6 @@
 import firebase from 'firebase'
 import * as apiHandler from './slackApi'
+require('dotenv').config()
 
 const TOKENS_REF = 'tokens'
 
@@ -33,7 +34,7 @@ const setupDevTeam = async () => {
     storeTeamToken(tokenData)
 }
 
-const getAllTokens = () => {
+const getAllTokens = () =>
     firebase.database().ref(TOKENS_REF).once('value')
       .then(snapshot => {
           const tokens = []
@@ -46,11 +47,18 @@ const getAllTokens = () => {
 
           return tokens
       })
-}
+
+const getTeamApiToken = (teamId) =>
+    firebase.database().ref(`${TOKENS_REF}/${teamId}`).once('value').then(snap => snap.val().token)
+
+const getBotToken = (teamId) =>
+    firebase.database().ref(`${TOKENS_REF}/${teamId}`).once('value').then(snap => snap.val().bot.botToken)
 
 export {
     storeTeamToken,
     setupDevTeam,
     init,
     getAllTokens,
+    getTeamApiToken,
+    getBotToken,
 }

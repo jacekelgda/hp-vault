@@ -1,5 +1,6 @@
 import slack from 'slack-node'
 import * as errorUtil from '../util/error'
+require('dotenv').config()
 
 const exchangeCodeForToken = (code) => {
   return new Promise((resolve, reject) => {
@@ -17,6 +18,19 @@ const exchangeCodeForToken = (code) => {
         reject('invalid token')
       } finally {
         resolve(response)
+      }
+    })
+  })
+}
+
+const getUsersFromChannel = (token, channel) => {
+  return new Promise((resolve, reject) => {
+    const slackClient = new slack(token)
+    slackClient.api('channels.info', { channel },(err, response) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(response.channel.members)
       }
     })
   })
@@ -52,4 +66,5 @@ export {
   exchangeCodeForToken,
   identifyDevBotData,
   getTeamUsers,
+  getUsersFromChannel,
 }
