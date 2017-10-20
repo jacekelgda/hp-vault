@@ -3,6 +3,8 @@ import * as apiHandler from './slackApi'
 require('dotenv').config()
 
 const TOKENS_REF = 'tokens'
+const HP_REF = 'hp'
+const INITIAL_HP_VALUE = 3
 
 const config = {
     apiKey: process.env.firebase_config_apikey,
@@ -54,6 +56,19 @@ const getTeamApiToken = (teamId) =>
 const getBotToken = (teamId) =>
     firebase.database().ref(`${TOKENS_REF}/${teamId}`).once('value').then(snap => snap.val().bot.botToken)
 
+// end of generic functionality
+
+const storeHp = (userId, teamId, timestamp) => {
+    const data = {
+      userId,
+      hp: INITIAL_HP_VALUE,
+      timeCreated: timestamp,
+      timeUpdated: timestamp
+    }
+    const ref = `${HP_REF}/${teamId}/${timestamp}/${userId}`
+    return firebase.database().ref(ref).set(data)
+}
+
 export {
     storeTeamToken,
     setupDevTeam,
@@ -61,4 +76,5 @@ export {
     getAllTokens,
     getTeamApiToken,
     getBotToken,
+    storeHp
 }
